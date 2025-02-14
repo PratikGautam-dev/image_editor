@@ -3,7 +3,7 @@ const path = require("path");
 const connectDB = require("./config/db");
 
 const app = express();
-const port = 8000;
+const port = process.env.PORT || 3000;
 
 connectDB();
 
@@ -16,4 +16,10 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/", require("./routes/upload"));
 app.use("/edits", require("./routes/edits"));
 
-app.listen(port, () => console.log(`Server running on http://localhost:${port}`));
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+}).on('error', (err) => {
+  console.error('Server failed to start:', err);
+});
+
+module.exports = app;
