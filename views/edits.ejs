@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Edit Image</title>
+  <title>Image Editor</title>
   <style>
     /* General Styling */
     body {
@@ -26,8 +26,9 @@
       align-items: center;
       gap: 20px;
       width: 90%;
-      max-width: 900px;
+      max-width: 1200px;
       margin: auto;
+      padding: 20px;
     }
 
     /* Image Display */
@@ -40,6 +41,8 @@
       padding: 20px;
       border-radius: 8px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      margin-bottom: 20px;
     }
 
     .image-container img {
@@ -47,6 +50,8 @@
       max-height: 450px;
       object-fit: contain;
       border-radius: 8px;
+      max-width: 100%;
+      height: auto;
     }
 
     /* Options Section */
@@ -130,6 +135,36 @@
         width: 100%;
       }
     }
+
+    .editing-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .edit-option {
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+
+    /* Add this to your existing styles */
+    .download-button {
+      background: #007bff;
+      color: white;
+      padding: 15px 30px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 20px;
+      border: none;
+      transition: background 0.3s ease;
+    }
+
+    .download-button:hover {
+      background: #0056b3;
+    }
   </style>
 </head>
 <body>
@@ -139,101 +174,161 @@
   <!-- Image Display -->
   <div class="editor-container">
     <div class="image-container">
-      <img src="/uploads/<%= filename %>" alt="Uploaded Image">
+      <img src="<%= imageUrl %>" alt="Uploaded Image" id="editImage">
     </div>
 
     <!-- Editing Options -->
-    <div class="options-container">
-
-      <!-- Remove Background -->
-      <div class="option">
-        <h3>Remove Background</h3>
-        <a href="/edits/remove-bg/<%= filename %>" class="btn">Remove Background</a>
-      </div>
-
-      <!-- Crop Image -->
-      <div class="option">
-        <h3>Crop Image</h3>
-        <form action="/edits/crop/<%= filename %>" method="get">
-          <label>Width:</label>
-          <input type="number" name="width" required>
-
-          <label>Height:</label>
-          <input type="number" name="height" required>
-
-          <button type="submit">Crop Image</button>
-        </form>
-      </div>
+    <div class="editing-options">
 
       <!-- Resize Image -->
-      <div class="option">
+      <div class="edit-option">
         <h3>Resize Image</h3>
-        <form action="/edits/resize/<%= filename %>" method="get">
-          <label>Width:</label>
-          <input type="number" name="width" required>
-
-          <label>Height:</label>
-          <input type="number" name="height" required>
-
-          <button type="submit">Resize Image</button>
-        </form>
+        <input type="number" id="width" placeholder="Width">
+        <input type="number" id="height" placeholder="Height">
+        <button onclick="transformImage('resize')">Resize</button>
       </div>
 
       <!-- Rotate Image -->
-      <div class="option">
+      <div class="edit-option">
         <h3>Rotate Image</h3>
-        <form action="/edits/rotate/<%= filename %>" method="get">
-          <label>Angle (°):</label>
-          <input type="number" name="angle" placeholder="90" required>
-
-          <button type="submit">Rotate Image</button>
-        </form>
+        <input type="number" id="rotation" placeholder="Degrees" value="90">
+        <button onclick="transformImage('rotate')">Rotate</button>
       </div>
 
-      <!-- Convert Format -->
-      <div class="option">
-        <h3>Convert Image</h3>
-        <form action="/edits/convert/<%= filename %>" method="get">
-          <label>Select Format:</label>
-          <select name="format" required>
-            <option value="jpg">JPG</option>
-            <option value="png">PNG</option>
-            <option value="webp">WEBP</option>
-          </select>
-
-          <button type="submit">Convert</button>
-        </form>
+      <!-- Format Conversion -->
+      <div class="edit-option">
+        <h3>Format Conversion</h3>
+        <select id="format">
+          <option value="jpg">JPG</option>
+          <option value="png">PNG</option>
+          <option value="webp">WebP</option>
+        </select>
+        <button onclick="transformImage('format')">Convert</button>
       </div>
 
-      <!-- Compress Image -->
-      <div class="option">
-        <h3>Compress Image</h3>
-        <form action="/edits/compress/<%= filename %>" method="get">
-          <label>Quality (%):</label>
-          <input type="number" name="quality" placeholder="80" min="10" max="100" required>
-
-          <button type="submit">Compress</button>
-        </form>
+      <!-- Quality -->
+      <div class="edit-option">
+        <h3>Quality</h3>
+        <input type="number" id="quality" placeholder="1-100" value="80">
+        <button onclick="transformImage('quality')">Adjust Quality</button>
       </div>
 
-      <!-- Apply Filter -->
-      <div class="option">
+      <!-- Background Removal -->
+      <div class="edit-option">
+        <h3>Remove Background</h3>
+        <button onclick="removeBackground()">Remove Background</button>
+      </div>
+
+      <!-- Filters -->
+      <div class="edit-option">
         <h3>Apply Filter</h3>
-        <form action="/edits/filter/<%= filename %>" method="get">
-          <label>Select Filter:</label>
-          <select name="filter" required>
-            <option value="grayscale">Grayscale</option>
-            <option value="sepia">Sepia</option>
-            <option value="blur">Blur</option>
-            <option value="sharpen">Sharpen</option>
-          </select>
-
-          <button type="submit">Apply Filter</button>
-        </form>
+        <select id="filter">
+          <option value="grayscale">Grayscale</option>
+          <option value="sepia">Sepia</option>
+          <option value="blur">Blur</option>
+          <option value="sharpen">Sharpen</option>
+        </select>
+        <button onclick="transformImage('filter')">Apply Filter</button>
       </div>
 
     </div>
+    
+    <!-- Download Button -->
+    <button class="download-button" onclick="downloadImage()">Download Edited Image</button>
   </div>
+
+  <script>
+    let currentTransformations = new URLSearchParams();
+
+    async function transformImage(type) {
+        try {
+            const fileId = '<%= fileId %>';
+            if (!fileId) {
+                throw new Error('File ID not found');
+            }
+            
+            switch(type) {
+                case 'resize':
+                    const width = document.getElementById('width').value;
+                    const height = document.getElementById('height').value;
+                    if (width) currentTransformations.set('width', width);
+                    if (height) currentTransformations.set('height', height);
+                    break;
+                case 'rotate':
+                    currentTransformations.set('rotation', document.getElementById('rotation').value || '90');
+                    break;
+                case 'format':
+                    currentTransformations.set('format', document.getElementById('format').value);
+                    break;
+                case 'quality':
+                    currentTransformations.set('quality', document.getElementById('quality').value || '80');
+                    break;
+                case 'filter':
+                    currentTransformations.set('filter', document.getElementById('filter').value);
+                    break;
+            }
+
+            const response = await fetch(`/edits/transform/${fileId}?${currentTransformations.toString()}`);
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || 'Transform request failed');
+            }
+            
+            const data = await response.json();
+            if (data.transformedUrl) {
+                const img = document.getElementById('editImage');
+                img.src = data.transformedUrl;
+                
+                // Force image refresh
+                img.onload = () => {
+                    console.log('Image transformed successfully');
+                };
+                img.onerror = (e) => {
+                    console.error('Error loading transformed image:', e);
+                    alert('Failed to load transformed image');
+                };
+            }
+        } catch (error) {
+            console.error('Transformation failed:', error);
+            alert('Failed to transform image: ' + error.message);
+        }
+    }
+
+    async function removeBackground() {
+      try {
+        const fileId = '<%= fileId %>';
+        const response = await fetch(`/edits/remove-bg/${fileId}`);
+        if (!response.ok) throw new Error('Background removal failed');
+        
+        const data = await response.json();
+        document.getElementById('editImage').src = data.transformedUrl;
+      } catch (error) {
+        console.error('Background removal failed:', error);
+        alert('Failed to remove background: ' + error.message);
+      }
+    }
+
+    async function downloadImage() {
+      try {
+        const img = document.getElementById('editImage');
+        const imageUrl = img.src;
+        
+        // Create a temporary link element
+        const link = document.createElement('a');
+        link.href = imageUrl;
+        link.download = 'edited-image.' + (imageUrl.split('.').pop().split('?')[0] || 'jpg');
+        
+        // Append link to body, click it, and remove it
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } catch (error) {
+        console.error('Download failed:', error);
+        alert('Failed to download image: ' + error.message);
+      }
+    }
+  </script>
 
 </body>
 </html>
+
