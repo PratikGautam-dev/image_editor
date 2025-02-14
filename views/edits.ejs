@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Image</title>
+  <style>
+    /* General Styling */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f4f4f4;
+      text-align: center;
+    }
+
+    h2 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    /* Container */
+    .editor-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      width: 90%;
+      max-width: 900px;
+      margin: auto;
+    }
+
+    /* Image Display */
+    .image-container {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .image-container img {
+      width: 100%;
+      max-height: 450px;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+
+    /* Options Section */
+    .options-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      max-width: 900px;
+    }
+
+    .option {
+      flex: 1;
+      min-width: 280px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-block;
+      text-decoration: none;
+      background: #007bff;
+      color: #fff;
+      padding: 10px 15px;
+      border-radius: 5px;
+      margin-top: 10px;
+      transition: 0.3s;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background: #0056b3;
+    }
+
+    /* Form Styling */
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    label {
+      font-weight: bold;
+    }
+
+    input, select {
+      width: 80%;
+      padding: 8px;
+      margin: 5px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      text-align: center;
+    }
+
+    button {
+      background: #28a745;
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #218838;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .options-container {
+        flex-direction: column;
+        align-items: center;
+      }
+      .option {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Image Editing Options</h2>
+  
+  <!-- Image Display -->
+  <div class="editor-container">
+    <div class="image-container">
+      <img src="/uploads/<%= filename %>" alt="Uploaded Image">
+    </div>
+
+    <!-- Editing Options -->
+    <div class="options-container">
+
+      <!-- Remove Background -->
+      <div class="option">
+        <h3>Remove Background</h3>
+        <a href="/edits/remove-bg/<%= filename %>" class="btn">Remove Background</a>
+      </div>
+
+      <!-- Crop Image -->
+      <div class="option">
+        <h3>Crop Image</h3>
+        <form action="/edits/crop/<%= filename %>" method="get">
+          <label>Width:</label>
+          <input type="number" name="width" required>
+
+          <label>Height:</label>
+          <input type="number" name="height" required>
+
+          <button type="submit">Crop Image</button>
+        </form>
+      </div>
+
+      <!-- Resize Image -->
+      <div class="option">
+        <h3>Resize Image</h3>
+        <form action="/edits/resize/<%= filename %>" method="get">
+          <label>Width:</label>
+          <input type="number" name="width" required>
+
+          <label>Height:</label>
+          <input type="number" name="height" required>
+
+          <button type="submit">Resize Image</button>
+        </form>
+      </div>
+
+      <!-- Rotate Image -->
+      <div class="option">
+        <h3>Rotate Image</h3>
+        <form action="/edits/rotate/<%= filename %>" method="get">
+          <label>Angle (°):</label>
+          <input type="number" name="angle" placeholder="90" required>
+
+          <button type="submit">Rotate Image</button>
+        </form>
+      </div>
+
+      <!-- Convert Format -->
+      <div class="option">
+        <h3>Convert Image</h3>
+        <form action="/edits/convert/<%= filename %>" method="get">
+          <label>Select Format:</label>
+          <select name="format" required>
+            <option value="jpg">JPG</option>
+            <option value="png">PNG</option>
+            <option value="webp">WEBP</option>
+          </select>
+
+          <button type="submit">Convert</button>
+        </form>
+      </div>
+
+      <!-- Compress Image -->
+      <div class="option">
+        <h3>Compress Image</h3>
+        <form action="/edits/compress/<%= filename %>" method="get">
+          <label>Quality (%):</label>
+          <input type="number" name="quality" placeholder="80" min="10" max="100" required>
+
+          <button type="submit">Compress</button>
+        </form>
+      </div>
+
+      <!-- Apply Filter -->
+      <div class="option">
+        <h3>Apply Filter</h3>
+        <form action="/edits/filter/<%= filename %>" method="get">
+          <label>Select Filter:</label>
+          <select name="filter" required>
+            <option value="grayscale">Grayscale</option>
+            <option value="sepia">Sepia</option>
+            <option value="blur">Blur</option>
+            <option value="sharpen">Sharpen</option>
+          </select>
+
+          <button type="submit">Apply Filter</button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>
