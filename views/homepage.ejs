@@ -3,64 +3,209 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Upload Image</title>
+  <title>Image Editor - Upload</title>
   <style>
-    /* Reset and General Styling */
-    body {
-      font-family: Arial, sans-serif;
+    * {
       margin: 0;
-      padding: 20px;
-      background-color: #f4f4f4;
-      text-align: center;
+      padding: 0;
+      box-sizing: border-box;
     }
 
-    /* Header Styling */
-    h2 {
-      color: #333;
-    }
-
-    /* Form Styling */
-    form {
-      background: #fff;
-      padding: 20px;
-      margin: 20px auto;
-      max-width: 400px;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+      background: #1a1a1a;
       display: flex;
       flex-direction: column;
-      gap: 10px;
       align-items: center;
+      justify-content: center;
+      padding: 20px;
+      color: #fff;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+      text-align: center;
+      padding: 0 15px;
+    }
+
+    h2 {
+      font-size: 2.5rem;
+      margin-bottom: 1.5rem;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+      color: #fff;
+    }
+
+    .upload-box {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      padding: 3rem;
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: all 0.3s ease;
+    }
+
+    .upload-box:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .drop-zone {
+      border: 2px dashed rgba(255,255,255,0.2);
+      border-radius: 15px;
+      padding: 40px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .drop-zone.dragover {
+      background: rgba(255,255,255,0.1);
+      border-color: #4a9eff;
+    }
+
+    .drop-zone p {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+      color: #ccc;
     }
 
     input[type="file"] {
-      border: 1px solid #ccc;
-      padding: 10px;
-      border-radius: 5px;
-      background: #fff;
-      cursor: pointer;
+      display: none;
     }
 
-    button {
-      background: #007bff;
-      color: white;
+    .upload-btn {
+      background: #4a9eff;
+      color: #fff;
+      padding: 12px 30px;
+      border-radius: 25px;
       border: none;
-      padding: 10px 15px;
-      border-radius: 5px;
+      font-size: 1.1rem;
+      font-weight: 600;
       cursor: pointer;
-      transition: background 0.3s ease;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
 
-    button:hover {
-      background: #0056b3;
+    .upload-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(74, 158, 255, 0.4);
+      background: #3a8eef;
+    }
+
+    .file-info {
+      margin-top: 15px;
+      font-size: 0.9rem;
+      color: #999;
+    }
+
+    /* Mobile Styles */
+    @media (max-width: 768px) {
+      h2 {
+        font-size: 2rem;
+      }
+
+      .upload-box {
+        padding: 1.5rem;
+      }
+
+      .drop-zone {
+        padding: 20px;
+      }
+
+      .upload-btn {
+        padding: 15px 25px;
+        width: 100%;
+        margin-top: 10px;
+      }
+
+      .drop-zone p {
+        font-size: 1rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 10px;
+      }
+
+      h2 {
+        font-size: 1.75rem;
+      }
     }
   </style>
 </head>
 <body>
-  <h2>Upload an Image</h2>
-  <form action="/upload" method="POST" enctype="multipart/form-data">
-    <input type="file" name="profileImage" required>
-    <button type="submit">Upload</button>
-  </form>
+  <div class="container">
+    <h2>Image Editor</h2>
+    <div class="upload-box">
+      <form action="/upload" method="POST" enctype="multipart/form-data" id="upload-form">
+        <div class="drop-zone" id="drop-zone">
+          <p>Drag and drop your image here</p>
+          <p>or</p>
+          <button type="button" class="upload-btn" onclick="document.getElementById('file-input').click()">
+            Choose File
+          </button>
+          <div class="file-info" id="file-info"></div>
+        </div>
+        <input type="file" name="profileImage" id="file-input" accept="image/*" required>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('file-input');
+    const fileInfo = document.getElementById('file-info');
+    const form = document.getElementById('upload-form');
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      dropZone.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropZone.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropZone.addEventListener(eventName, unhighlight, false);
+    });
+
+    function highlight(e) {
+      dropZone.classList.add('dragover');
+    }
+
+    function unhighlight(e) {
+      dropZone.classList.remove('dragover');
+    }
+
+    dropZone.addEventListener('drop', handleDrop, false);
+
+    function handleDrop(e) {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      fileInput.files = files;
+      updateFileInfo(files[0]);
+      form.submit();
+    }
+
+    fileInput.addEventListener('change', function(e) {
+      updateFileInfo(this.files[0]);
+      form.submit();
+    });
+
+    function updateFileInfo(file) {
+      fileInfo.textContent = `Selected: ${file.name}`;
+    }
+  </script>
 </body>
 </html>

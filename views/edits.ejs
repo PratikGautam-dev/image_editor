@@ -5,165 +5,247 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Image Editor</title>
   <style>
-    /* General Styling */
-    body {
-      font-family: Arial, sans-serif;
+    * {
       margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #1a1a1a;
+      min-height: 100vh;
+      color: #fff;
+    }
+
+    .editor-container {
+      max-width: 1400px;
+      margin: 2rem auto;
       padding: 20px;
-      background-color: #f4f4f4;
-      text-align: center;
     }
 
     h2 {
-      color: #333;
-      margin-bottom: 20px;
-    }
-
-    /* Container */
-    .editor-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 20px;
-      width: 90%;
-      max-width: 1200px;
-      margin: auto;
-      padding: 20px;
-    }
-
-    /* Image Display */
-    .image-container {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      color: #fff;
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 2rem;
+      font-size: 2.5rem;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+    }
+
+    .main-content {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 2rem;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .image-container {
+      background: #2a2a2a;
+      padding: 1rem;
+      border-radius: 15px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
     }
 
     .image-container img {
       width: 100%;
-      max-height: 450px;
-      object-fit: contain;
-      border-radius: 8px;
-      max-width: 100%;
       height: auto;
-    }
-
-    /* Options Section */
-    .options-container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 20px;
-      max-width: 900px;
-    }
-
-    .option {
-      flex: 1;
-      min-width: 280px;
-      background: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      text-align: center;
-    }
-
-    /* Buttons */
-    .btn {
-      display: inline-block;
-      text-decoration: none;
-      background: #007bff;
-      color: #fff;
-      padding: 10px 15px;
-      border-radius: 5px;
-      margin-top: 10px;
-      transition: 0.3s;
-      border: none;
-      cursor: pointer;
-    }
-
-    .btn:hover {
-      background: #0056b3;
-    }
-
-    /* Form Styling */
-    form {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-    }
-
-    label {
-      font-weight: bold;
-    }
-
-    input, select {
-      width: 80%;
-      padding: 8px;
-      margin: 5px 0;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      text-align: center;
-    }
-
-    button {
-      background: #28a745;
-      color: white;
-      padding: 10px;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-
-    button:hover {
-      background: #218838;
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-      .options-container {
-        flex-direction: column;
-        align-items: center;
-      }
-      .option {
-        width: 100%;
-      }
+      border-radius: 10px;
+      transition: transform 0.3s ease;
     }
 
     .editing-options {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
-      padding: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 1.5rem;
+      border-radius: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
     }
 
     .edit-option {
-      padding: 15px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
+      background: #2a2a2a;
+      padding: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255,255,255,0.1);
     }
 
-    /* Add this to your existing styles */
-    .download-button {
-      background: #007bff;
-      color: white;
-      padding: 15px 30px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 16px;
-      margin-top: 20px;
+    .edit-option:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      background: #333;
+    }
+
+    .edit-option h3 {
+      color: #4a9eff;
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      background: #333;
+      color: #fff;
+    }
+
+    input:focus, select:focus {
+      border-color: #4a9eff;
+      outline: none;
+      background: #404040;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
       border: none;
-      transition: background 0.3s ease;
+      border-radius: 8px;
+      background: #4a9eff;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background: #3a8eef;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(74, 158, 255, 0.3);
+    }
+
+    .download-button {
+      margin-top: 2rem;
+      padding: 1rem;
+      font-size: 1.1rem;
+      background: #2ecc71;
     }
 
     .download-button:hover {
-      background: #0056b3;
+      background: #27ae60;
+    }
+
+    @media (max-width: 1024px) {
+      .main-content {
+        grid-template-columns: 1fr;
+      }
+      
+      .editing-options {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+      }
+
+      .editor-container {
+        padding: 10px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      h2 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+      }
+
+      .main-content {
+        padding: 1rem;
+      }
+
+      .editing-options {
+        grid-template-columns: 1fr;
+      }
+
+      .edit-option {
+        padding: 15px;
+      }
+
+      .edit-option h3 {
+        font-size: 1rem;
+        margin-bottom: 0.75rem;
+      }
+
+      button {
+        padding: 12px;
+        min-height: 45px; /* Better touch target */
+      }
+
+      input, select {
+        padding: 12px;
+        min-height: 45px; /* Better touch target */
+        font-size: 16px; /* Prevent auto-zoom on iOS */
+      }
+
+      .download-button {
+        padding: 15px;
+        margin-top: 1rem;
+      }
+
+      .image-container {
+        margin: -1rem -1rem 1rem -1rem;
+        border-radius: 0;
+      }
+
+      .image-container img {
+        border-radius: 0;
+      }
+    }
+
+    @media (max-width: 480px) {
+      h2 {
+        font-size: 1.75rem;
+      }
+
+      .editor-container {
+        padding: 0;
+        margin: 1rem 0;
+      }
+
+      .main-content {
+        border-radius: 0;
+        box-shadow: none;
+      }
+
+      .edit-option {
+        margin: 0 -0.5rem;
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+      }
+    }
+
+    /* Loading animation */
+    .loading {
+      position: relative;
+      opacity: 0.7;
+    }
+
+    .loading::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 30px;
+      height: 30px;
+      border: 3px solid #333;
+      border-top: 3px solid #4a9eff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      transform: translate(-50%, -50%);
+    }
+
+    @keyframes spin {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(360deg); }
     }
   </style>
 </head>
@@ -173,64 +255,66 @@
   
   <!-- Image Display -->
   <div class="editor-container">
-    <div class="image-container">
-      <img src="<%= imageUrl %>" alt="Uploaded Image" id="editImage">
-    </div>
-
-    <!-- Editing Options -->
-    <div class="editing-options">
-
-      <!-- Resize Image -->
-      <div class="edit-option">
-        <h3>Resize Image</h3>
-        <input type="number" id="width" placeholder="Width">
-        <input type="number" id="height" placeholder="Height">
-        <button onclick="transformImage('resize')">Resize</button>
+    <div class="main-content">
+      <div class="image-container">
+        <img src="<%= imageUrl %>" alt="Uploaded Image" id="editImage">
       </div>
 
-      <!-- Rotate Image -->
-      <div class="edit-option">
-        <h3>Rotate Image</h3>
-        <input type="number" id="rotation" placeholder="Degrees" value="90">
-        <button onclick="transformImage('rotate')">Rotate</button>
-      </div>
+      <!-- Editing Options -->
+      <div class="editing-options">
 
-      <!-- Format Conversion -->
-      <div class="edit-option">
-        <h3>Format Conversion</h3>
-        <select id="format">
-          <option value="jpg">JPG</option>
-          <option value="png">PNG</option>
-          <option value="webp">WebP</option>
-        </select>
-        <button onclick="transformImage('format')">Convert</button>
-      </div>
+        <!-- Resize Image -->
+        <div class="edit-option">
+          <h3>Resize Image</h3>
+          <input type="number" id="width" placeholder="Width">
+          <input type="number" id="height" placeholder="Height">
+          <button onclick="transformImage('resize')">Resize</button>
+        </div>
 
-      <!-- Quality -->
-      <div class="edit-option">
-        <h3>Quality</h3>
-        <input type="number" id="quality" placeholder="1-100" value="80">
-        <button onclick="transformImage('quality')">Adjust Quality</button>
-      </div>
+        <!-- Rotate Image -->
+        <div class="edit-option">
+          <h3>Rotate Image</h3>
+          <input type="number" id="rotation" placeholder="Degrees" value="90">
+          <button onclick="transformImage('rotate')">Rotate</button>
+        </div>
 
-      <!-- Background Removal -->
-      <div class="edit-option">
-        <h3>Remove Background</h3>
-        <button onclick="removeBackground()">Remove Background</button>
-      </div>
+        <!-- Format Conversion -->
+        <div class="edit-option">
+          <h3>Format Conversion</h3>
+          <select id="format">
+            <option value="jpg">JPG</option>
+            <option value="png">PNG</option>
+            <option value="webp">WebP</option>
+          </select>
+          <button onclick="transformImage('format')">Convert</button>
+        </div>
 
-      <!-- Filters -->
-      <div class="edit-option">
-        <h3>Apply Filter</h3>
-        <select id="filter">
-          <option value="grayscale">Grayscale</option>
-          <option value="sepia">Sepia</option>
-          <option value="blur">Blur</option>
-          <option value="sharpen">Sharpen</option>
-        </select>
-        <button onclick="transformImage('filter')">Apply Filter</button>
-      </div>
+        <!-- Quality -->
+        <div class="edit-option">
+          <h3>Quality</h3>
+          <input type="number" id="quality" placeholder="1-100" value="80">
+          <button onclick="transformImage('quality')">Adjust Quality</button>
+        </div>
 
+        <!-- Background Removal -->
+        <div class="edit-option">
+          <h3>Remove Background</h3>
+          <button onclick="removeBackground()">Remove Background</button>
+        </div>
+
+        <!-- Filters -->
+        <div class="edit-option">
+          <h3>Apply Filter</h3>
+          <select id="filter">
+            <option value="grayscale">Grayscale</option>
+            <option value="sepia">Sepia</option>
+            <option value="blur">Blur</option>
+            <option value="sharpen">Sharpen</option>
+          </select>
+          <button onclick="transformImage('filter')">Apply Filter</button>
+        </div>
+
+      </div>
     </div>
     
     <!-- Download Button -->
@@ -241,57 +325,60 @@
     let currentTransformations = new URLSearchParams();
 
     async function transformImage(type) {
-        try {
-            const fileId = '<%= fileId %>';
-            if (!fileId) {
-                throw new Error('File ID not found');
-            }
-            
-            switch(type) {
-                case 'resize':
-                    const width = document.getElementById('width').value;
-                    const height = document.getElementById('height').value;
-                    if (width) currentTransformations.set('width', width);
-                    if (height) currentTransformations.set('height', height);
-                    break;
-                case 'rotate':
-                    currentTransformations.set('rotation', document.getElementById('rotation').value || '90');
-                    break;
-                case 'format':
-                    currentTransformations.set('format', document.getElementById('format').value);
-                    break;
-                case 'quality':
-                    currentTransformations.set('quality', document.getElementById('quality').value || '80');
-                    break;
-                case 'filter':
-                    currentTransformations.set('filter', document.getElementById('filter').value);
-                    break;
-            }
+      setLoading(true);
+      try {
+          const fileId = '<%= fileId %>';
+          if (!fileId) {
+              throw new Error('File ID not found');
+          }
+          
+          switch(type) {
+              case 'resize':
+                  const width = document.getElementById('width').value;
+                  const height = document.getElementById('height').value;
+                  if (width) currentTransformations.set('width', width);
+                  if (height) currentTransformations.set('height', height);
+                  break;
+              case 'rotate':
+                  currentTransformations.set('rotation', document.getElementById('rotation').value || '90');
+                  break;
+              case 'format':
+                  currentTransformations.set('format', document.getElementById('format').value);
+                  break;
+              case 'quality':
+                  currentTransformations.set('quality', document.getElementById('quality').value || '80');
+                  break;
+              case 'filter':
+                  currentTransformations.set('filter', document.getElementById('filter').value);
+                  break;
+          }
 
-            const response = await fetch(`/edits/transform/${fileId}?${currentTransformations.toString()}`);
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(errorText || 'Transform request failed');
-            }
-            
-            const data = await response.json();
-            if (data.transformedUrl) {
-                const img = document.getElementById('editImage');
-                img.src = data.transformedUrl;
-                
-                // Force image refresh
-                img.onload = () => {
-                    console.log('Image transformed successfully');
-                };
-                img.onerror = (e) => {
-                    console.error('Error loading transformed image:', e);
-                    alert('Failed to load transformed image');
-                };
-            }
-        } catch (error) {
-            console.error('Transformation failed:', error);
-            alert('Failed to transform image: ' + error.message);
-        }
+          const response = await fetch(`/edits/transform/${fileId}?${currentTransformations.toString()}`);
+          if (!response.ok) {
+              const errorText = await response.text();
+              throw new Error(errorText || 'Transform request failed');
+          }
+          
+          const data = await response.json();
+          if (data.transformedUrl) {
+              const img = document.getElementById('editImage');
+              img.src = data.transformedUrl;
+              
+              // Force image refresh
+              img.onload = () => {
+                  console.log('Image transformed successfully');
+              };
+              img.onerror = (e) => {
+                  console.error('Error loading transformed image:', e);
+                  alert('Failed to load transformed image');
+              };
+          }
+      } catch (error) {
+          console.error('Transformation failed:', error);
+          alert('Failed to transform image: ' + error.message);
+      } finally {
+        setLoading(false);
+      }
     }
 
     async function removeBackground() {
@@ -325,6 +412,16 @@
       } catch (error) {
         console.error('Download failed:', error);
         alert('Failed to download image: ' + error.message);
+      }
+    }
+
+    // Add loading state
+    function setLoading(isLoading) {
+      const img = document.getElementById('editImage');
+      if (isLoading) {
+        img.classList.add('loading');
+      } else {
+        img.classList.remove('loading');
       }
     }
   </script>
